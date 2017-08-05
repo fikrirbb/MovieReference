@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -41,6 +42,9 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
     LinearLayout mLinearNetworkRetry;
     TextView mDisplayErrorMessage;
 
+    private Parcelable layoutManagerSaveState;
+    private String selectedCategory;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +58,21 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
         mAdapter = new MovieReferenceAdapter(results, this);
         mRecyclerView.setAdapter(mAdapter);
         if (isWifiConnected() || isNetworkConnected()) {
-            getDataFromAPI(Constant.POPULAR);
+            if (savedInstanceState != null) {
+                selectedCategory = savedInstanceState.getString(Constant.KEY_SELECTED_CATEGORY);
+                if (selectedCategory.equals(Constant.POPULAR)) {
+                    getDataFromAPI(Constant.POPULAR);
+                    getSupportActionBar().setSubtitle(R.string.action_most_popular);
+                } else {
+                    getDataFromAPI(Constant.TOP_RATED);
+                    getSupportActionBar().setSubtitle(R.string.action_top_rated);
+                }
+                layoutManagerSaveState = savedInstanceState.getParcelable(Constant.LAYOUT_MANAGER);
+            } else {
+                // Set default
+                getDataFromAPI(Constant.POPULAR);
+                getSupportActionBar().setSubtitle(R.string.action_most_popular);
+            }
         } else {
             mRecyclerView.setVisibility(View.INVISIBLE);
             mLinearNetworkRetry.setVisibility(View.VISIBLE);
@@ -142,11 +160,13 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
 
         switch (itemId) {
             case R.id.action_most_popular:
-                getDataFromAPI(Constant.POPULAR);
+                selectedCategory = Constant.POPULAR;
+                getDataFromAPI(selectedCategory);
                 getSupportActionBar().setSubtitle(R.string.action_most_popular);
                 return true;
             case R.id.action_top_rated:
-                getDataFromAPI(Constant.TOP_RATED);
+                selectedCategory = Constant.TOP_RATED;
+                getDataFromAPI(selectedCategory);
                 getSupportActionBar().setSubtitle(R.string.action_top_rated);
                 return true;
             default:
@@ -168,4 +188,10 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
         return networkInfo != null && networkInfo.isConnected() && (ConnectivityManager.TYPE_WIFI == networkInfo.getType());
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(Constant.KEY_SELECTED_CATEGORY, selectedCategory);
+        outState.putParcelable(Constant.LAYOUT_MANAGER, mRecyclerView.getLayoutManager().onSaveInstanceState());
+    }
 }
