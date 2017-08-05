@@ -7,6 +7,8 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -81,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
                     public void onResponse(String response) {
                         try {
                             Movies movies = gson.fromJson(response, Movies.class);
+                            results.clear();
                             for (MovieResults item : movies.getResults()) {
                                 results.add(item);
                             }
@@ -110,5 +113,29 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
         startDetailActivity.putExtra("data", gson.toJson(data));
         startDetailActivity.putExtra("id", String.valueOf(data.getId()));
         startActivity(startDetailActivity);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+
+        switch (itemId) {
+            case R.id.action_most_popular:
+                getDataFromAPI(Constant.POPULAR);
+                getSupportActionBar().setSubtitle(R.string.action_most_popular);
+                return true;
+            case R.id.action_top_rated:
+                getDataFromAPI(Constant.TOP_RATED);
+                getSupportActionBar().setSubtitle(R.string.action_top_rated);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }
