@@ -1,4 +1,4 @@
-package com.example.satyakresna.moviereference.model;
+package com.example.satyakresna.moviereference.model.movies;
 
 import java.util.List;
 

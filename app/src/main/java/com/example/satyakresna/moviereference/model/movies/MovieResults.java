@@ -1,4 +1,4 @@
-package com.example.satyakresna.moviereference.model;
+package com.example.satyakresna.moviereference.model.movies;
 
 /**
  * Created by satyakresna on 05-Aug-17.

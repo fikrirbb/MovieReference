@@ -24,8 +24,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.satyakresna.moviereference.adapter.MovieReferenceAdapter;
-import com.example.satyakresna.moviereference.model.MovieResults;
-import com.example.satyakresna.moviereference.model.Movies;
+import com.example.satyakresna.moviereference.model.movies.MovieResults;
+import com.example.satyakresna.moviereference.model.movies.Movies;
 import com.example.satyakresna.moviereference.utilities.Constant;
 import com.google.gson.Gson;
 

@@ -2,14 +2,13 @@ package com.example.satyakresna.moviereference.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.example.satyakresna.moviereference.R;
-import com.example.satyakresna.moviereference.model.MovieResults;
+import com.example.satyakresna.moviereference.model.movies.MovieResults;
 import com.example.satyakresna.moviereference.utilities.ImageUrlBuilder;
 import com.squareup.picasso.Picasso;
 

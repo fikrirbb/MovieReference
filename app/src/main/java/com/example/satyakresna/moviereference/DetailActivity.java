@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.satyakresna.moviereference.model.MovieResults;
+import com.example.satyakresna.moviereference.model.movies.MovieResults;
 import com.example.satyakresna.moviereference.utilities.DateFormatter;
 import com.example.satyakresna.moviereference.utilities.ImageUrlBuilder;
 import com.google.gson.Gson;
