@@ -70,7 +70,8 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
                 layoutManagerSaveState = savedInstanceState.getParcelable(Constant.LAYOUT_MANAGER);
             } else {
                 // Set default
-                getDataFromAPI(Constant.POPULAR);
+                selectedCategory = Constant.POPULAR;
+                getDataFromAPI(selectedCategory);
                 getSupportActionBar().setSubtitle(R.string.action_most_popular);
             }
         } else {
