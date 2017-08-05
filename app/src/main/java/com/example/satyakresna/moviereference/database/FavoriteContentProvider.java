@@ -1,9 +1,12 @@
 package com.example.satyakresna.moviereference.database;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -39,7 +42,22 @@ public class FavoriteContentProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        return null;
+        Uri result = null;
+        final SQLiteDatabase db = dbHelper.getWritableDatabase();
+        int match = uriMatcher.match(uri);
+        switch (match) {
+            case FAVORITES:
+                long id = db.insert(FavoriteContract.FavoriteEntry.TABLE_NAME, null, values);
+                if (id > 0) {
+                    result = ContentUris.withAppendedId(FavoriteContract.FavoriteEntry.CONTENT_URI, id);
+                } else {
+                    throw new SQLException("Insert data failed to "+uri);
+                }
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown URI: "+uri);
+        }
+        return result;
     }
 
     @Override
