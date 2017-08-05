@@ -1,6 +1,9 @@
 package com.example.satyakresna.moviereference;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -9,6 +12,9 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -32,19 +38,28 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
     private Gson gson = new Gson();
     private MovieReferenceAdapter mAdapter;
     RecyclerView mRecyclerView;
+    LinearLayout mLinearNetworkRetry;
+    TextView mDisplayErrorMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_movies);
+        mLinearNetworkRetry = (LinearLayout) findViewById(R.id.line_network_retry);
+        mDisplayErrorMessage = (TextView) findViewById(R.id.tv_error_message);
         GridLayoutManager layoutManager = new GridLayoutManager(this, calculateNoOfColumns(MainActivity.this));
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
         mAdapter = new MovieReferenceAdapter(results, this);
         mRecyclerView.setAdapter(mAdapter);
+        if (isWifiConnected() || isNetworkConnected()) {
+            getDataFromAPI(Constant.POPULAR);
+        } else {
+            mRecyclerView.setVisibility(View.INVISIBLE);
+            mLinearNetworkRetry.setVisibility(View.VISIBLE);
+        }
 
-        getDataFromAPI(Constant.POPULAR);
     }
 
     /**
@@ -138,4 +153,19 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    private boolean isNetworkConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
+    }
+
+    private boolean isWifiConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected() && (ConnectivityManager.TYPE_WIFI == networkInfo.getType());
+    }
+
 }
