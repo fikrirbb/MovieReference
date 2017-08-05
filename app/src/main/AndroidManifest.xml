@@ -22,6 +22,10 @@
             android:name=".DetailActivity"
             android:label="@string/title_activity_detail"
             android:theme="@style/AppTheme.NoActionBar"></activity>
+        <provider
+            android:exported="false"
+            android:authorities="com.example.satyakresna.moviereference"
+            android:name=".database.FavoriteContentProvider" />
     </application>
 
 </manifest>
