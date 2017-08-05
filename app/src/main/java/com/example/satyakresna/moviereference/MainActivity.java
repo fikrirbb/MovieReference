@@ -1,5 +1,6 @@
 package com.example.satyakresna.moviereference;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -22,7 +23,7 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements MovieReferenceAdapter.ItemClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private List<MovieResults> results = new ArrayList<>();
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity{
         GridLayoutManager layoutManager = new GridLayoutManager(this, calculateNoOfColumns(MainActivity.this));
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
-        mAdapter = new MovieReferenceAdapter(results);
+        mAdapter = new MovieReferenceAdapter(results, this);
         mRecyclerView.setAdapter(mAdapter);
 
         getDataFromAPI(Constant.POPULAR);
@@ -101,5 +102,13 @@ public class MainActivity extends AppCompatActivity{
                 }
         );
         requestQueue.add(stringRequest);
+    }
+
+    @Override
+    public void onItemClick(MovieResults data, int position) {
+        Intent startDetailActivity = new Intent(this, DetailActivity.class);
+        startDetailActivity.putExtra("data", gson.toJson(data));
+        startDetailActivity.putExtra("id", String.valueOf(data.getId()));
+        startActivity(startDetailActivity);
     }
 }

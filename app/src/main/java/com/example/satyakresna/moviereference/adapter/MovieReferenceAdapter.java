@@ -24,9 +24,15 @@ public class MovieReferenceAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 
     private static final String TAG = MovieReferenceAdapter.class.getSimpleName();
     private List<MovieResults> list = new ArrayList<>();
+    private final ItemClickListener mOnClickListener;
 
-    public MovieReferenceAdapter(List<MovieResults> list) {
+    public interface ItemClickListener {
+        void onItemClick(MovieResults data, int position);
+    }
+
+    public MovieReferenceAdapter(List<MovieResults> list, ItemClickListener mOnClickListener) {
         this.list = list;
+        this.mOnClickListener = mOnClickListener;
     }
 
     @Override
@@ -65,6 +71,12 @@ public class MovieReferenceAdapter extends RecyclerView.Adapter<RecyclerView.Vie
                     .load(ImageUrlBuilder.getPosterUrl(data.getPoster_path()))
                     .placeholder(R.drawable.ic_local_movies)
                     .error(R.drawable.ic_error).into(posterPath);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mOnClickListener.onItemClick(data, position);
+                }
+            });
         }
     }
 }
