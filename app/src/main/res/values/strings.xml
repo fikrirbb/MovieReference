@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">Movie Reference</string>
+    <string name="error_message">Failed to get movie list. Please turn on internet connection.</string>
+    <string name="action_most_popular">Most Popular</string>
+    <string name="action_top_rated">Top Rated</string>
+    <string name="movie_title">Interstellar</string>
+    <string name="img_poster">Poster Image</string>
+    <string name="img_backdrop">Backdrop Image</string>
+    <string name="overview_label">Overview</string>
+    <string name="overview">A team of explorers travel through a wormhole in space in an attempt to ensure humanity\'s survival.</string>
+    <string name="release_date_label">Release date</string>
+    <string name="release_date">Nov 25, 2014</string>
+    <string name="vote_label">Movie rate</string>
+    <string name="vote">8.7/10</string>
 </resources>
