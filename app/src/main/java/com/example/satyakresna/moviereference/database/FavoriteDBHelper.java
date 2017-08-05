@@ -27,7 +27,6 @@ public class FavoriteDBHelper extends SQLiteOpenHelper {
                 FavoriteContract.FavoriteEntry.COLUMN_RATING + " REAL NOT NULL, " +
                 FavoriteContract.FavoriteEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL, " +
                 FavoriteContract.FavoriteEntry.COLUMN_BACKDROP + " TEXT NOT NULL, " +
-                FavoriteContract.FavoriteEntry.COLUMN_TIMESTAMP + " TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
                 "); ";
         sqLiteDatabase.execSQL(SQL_CREATE_TABLE);
     }

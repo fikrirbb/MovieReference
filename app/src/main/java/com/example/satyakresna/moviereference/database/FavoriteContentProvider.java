@@ -2,6 +2,7 @@ package com.example.satyakresna.moviereference.database;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -12,9 +13,15 @@ import android.support.annotation.Nullable;
  */
 
 public class FavoriteContentProvider extends ContentProvider {
+    private FavoriteDBHelper dbHelper;
+    public static final int FAVORITES = 100;
+    public static final int FAVORITES_WITH_ID = 101;
+    private static final UriMatcher uriMatcher = buildUriMatcher();
+
     @Override
     public boolean onCreate() {
-        return false;
+        dbHelper = new FavoriteDBHelper(getContext());
+        return true;
     }
 
     @Nullable
@@ -43,5 +50,12 @@ public class FavoriteContentProvider extends ContentProvider {
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
         return 0;
+    }
+
+    public static UriMatcher buildUriMatcher() {
+        UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
+        matcher.addURI(FavoriteContract.AUTHORITY, FavoriteContract.PATH_FAVORITES, FAVORITES);
+        matcher.addURI(FavoriteContract.AUTHORITY, FavoriteContract.PATH_FAVORITES + "/#", FAVORITES_WITH_ID);
+        return matcher;
     }
 }
