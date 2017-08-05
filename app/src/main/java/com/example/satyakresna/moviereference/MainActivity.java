@@ -170,6 +170,8 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
                 getDataFromAPI(selectedCategory);
                 getSupportActionBar().setSubtitle(R.string.action_top_rated);
                 return true;
+            case R.id.action_favorites:
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
