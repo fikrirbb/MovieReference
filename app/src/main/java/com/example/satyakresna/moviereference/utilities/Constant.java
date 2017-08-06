@@ -17,4 +17,5 @@ public class Constant {
     public static final String KEY_MOVIE = "movie";
     public static final String VIDEOS = "/videos";
     public static final String REVIEW = "/reviews";
+    public static final int LOADER_ID = 1;
 }

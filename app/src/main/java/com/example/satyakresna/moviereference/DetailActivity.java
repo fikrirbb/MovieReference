@@ -2,10 +2,14 @@ package com.example.satyakresna.moviereference;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -35,6 +39,9 @@ public class DetailActivity extends AppCompatActivity {
     private MovieResults movieResults;
     private Gson gson = new Gson();
 
+    private LoaderManager.LoaderCallbacks<Cursor> loaderCallbacks;
+    private Cursor favoriteData = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,10 +67,57 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
+        setupLoader(this, getContentResolver());
+        initLoader(getSupportLoaderManager());
+
         if (jsonData != null) {
             movieResults = gson.fromJson(jsonData, MovieResults.class);
             bindData();
         }
+    }
+
+    private void initLoader(LoaderManager supportLoaderManager) {
+        supportLoaderManager.initLoader(Constant.LOADER_ID, null, loaderCallbacks);
+    }
+
+    private void setupLoader(final DetailActivity detailActivity, final ContentResolver contentResolver) {
+        loaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
+            @Override
+            public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+                return new AsyncTaskLoader<Cursor>(detailActivity) {
+                    @Override
+                    public Cursor loadInBackground() {
+                        try {
+                            return contentResolver.query(
+                                    FavoriteContract.FavoriteEntry.CONTENT_URI,
+                                    null,
+                                    null,
+                                    null,
+                                    null
+                            );
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            return null;
+                        }
+                    }
+
+                    @Override
+                    protected void onStartLoading() {
+                        forceLoad();
+                    }
+                };
+            }
+
+            @Override
+            public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+                Log.d("size -> ", ""+data.getCount());
+            }
+
+            @Override
+            public void onLoaderReset(Loader<Cursor> loader) {
+
+            }
+        };
     }
 
     private MovieResults getMovieItem(String json) {
@@ -98,5 +152,15 @@ public class DetailActivity extends AppCompatActivity {
         releaseDate.setText(DateFormatter.getReadableDate(movieResults.getRelease_date()));
         voteAverage.setText(String.valueOf(movieResults.getVote_average()));
         overview.setText(movieResults.getOverview());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        restartLoader(getSupportLoaderManager());
+    }
+
+    private void restartLoader(LoaderManager supportLoaderManager) {
+        supportLoaderManager.restartLoader(Constant.LOADER_ID, null, loaderCallbacks);
     }
 }
