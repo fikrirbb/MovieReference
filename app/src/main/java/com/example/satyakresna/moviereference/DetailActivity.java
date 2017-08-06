@@ -21,7 +21,7 @@ public class DetailActivity extends AppCompatActivity {
 
     private ImageView backdrop;
     private ImageView poster;
-    private TextView relaseDate;
+    private TextView releaseDate;
     private TextView voteAverage;
     private TextView overview;
     private CoordinatorLayout parentDetail;
@@ -36,7 +36,7 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
         backdrop = (ImageView) findViewById(R.id.iv_backdrop_path);
         poster = (ImageView) findViewById(R.id.iv_poster);
-        relaseDate = (TextView) findViewById(R.id.tv_release_date);
+        releaseDate = (TextView) findViewById(R.id.tv_release_date);
         voteAverage = (TextView) findViewById(R.id.tv_vote_average);
         overview = (TextView) findViewById(R.id.tv_overview);
         parentDetail = (CoordinatorLayout) findViewById(R.id.parent_detail);
@@ -73,7 +73,7 @@ public class DetailActivity extends AppCompatActivity {
                 .placeholder(R.drawable.ic_local_movies)
                 .error(R.drawable.ic_error)
                 .into(poster);
-        relaseDate.setText(DateFormatter.getReadableDate(movieResults.getRelease_date()));
+        releaseDate.setText(DateFormatter.getReadableDate(movieResults.getRelease_date()));
         voteAverage.setText(String.valueOf(movieResults.getVote_average()));
         overview.setText(movieResults.getOverview());
     }
