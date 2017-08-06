@@ -72,12 +72,20 @@ public class DetailActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     if ((Integer)fab.getTag() == R.drawable.ic_star_selected) {
-
+                        unsetAsFavorite(getContentResolver(), getMovieItem(jsonData));
                     } else {
                         saveAsFavorite(getContentResolver(), getMovieItem(jsonData));
+                        restartLoader(getSupportLoaderManager());
                     }
                 }
             });
+        }
+    }
+
+    private void unsetAsFavorite(ContentResolver contentResolver, MovieResults movieItem) {
+        long result = contentResolver.delete(uriWithIDBuilder(movieItem.getId()), null, null);
+        if (result > 0) {
+            restartLoader(getSupportLoaderManager());
         }
     }
 

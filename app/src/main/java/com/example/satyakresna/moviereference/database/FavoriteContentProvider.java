@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 /**
  * Created by satyakresna on 06-Aug-17.
@@ -20,6 +21,7 @@ public class FavoriteContentProvider extends ContentProvider {
     public static final int FAVORITES = 100;
     public static final int FAVORITES_WITH_ID = 101;
     private static final UriMatcher uriMatcher = buildUriMatcher();
+    private static final String TAG = FavoriteContentProvider.class.getSimpleName();
 
     @Override
     public boolean onCreate() {
@@ -64,7 +66,7 @@ public class FavoriteContentProvider extends ContentProvider {
                 );
                 break;
             default:
-                throw new UnsupportedOperationException("Unknown uri: "+uri);
+                Log.w(TAG, "Unknown URI: "+uri);
         }
         return result;
     }
@@ -89,18 +91,34 @@ public class FavoriteContentProvider extends ContentProvider {
                     // no inspection constant conditions
                     getContext().getContentResolver().notifyChange(uri, null);
                 } else {
-                    throw new SQLException("Insert data failed to "+uri);
+                    Log.w(TAG, "Insert data failed to: "+uri);
                 }
                 break;
             default:
-                throw new UnsupportedOperationException("Unknown URI: "+uri);
+                Log.w(TAG, "Unknown URI: "+uri);
         }
         return result;
     }
 
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+        int result = 0;
+        final SQLiteDatabase db = dbHelper.getWritableDatabase();
+        int match = uriMatcher.match(uri);
+        switch (match) {
+            case FAVORITES_WITH_ID:
+                String whereClause = FavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID + "=?";
+                String id = uri.getPathSegments().get(1);
+                result = db.delete(FavoriteContract.FavoriteEntry.TABLE_NAME, whereClause, new String[]{id});
+                break;
+            default:
+                Log.w(TAG, "Unknown URI: "+uri);
+        }
+
+        if (result > 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return result;
     }
 
     @Override
