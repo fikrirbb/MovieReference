@@ -74,6 +74,11 @@ public class DetailActivity extends AppCompatActivity {
         ContentValues cv = new ContentValues();
         cv.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID, item.getId());
         cv.put(FavoriteContract.FavoriteEntry.COLUMN_TITLE, item.getTitle());
+        cv.put(FavoriteContract.FavoriteEntry.COLUMN_BACKDROP, item.getBackdrop_path());
+        cv.put(FavoriteContract.FavoriteEntry.COLUMN_POSTER, item.getPoster_path());
+        cv.put(FavoriteContract.FavoriteEntry.COLUMN_RATING, item.getVote_average());
+        cv.put(FavoriteContract.FavoriteEntry.COLUMN_RELEASE_DATE, item.getRelease_date());
+        cv.put(FavoriteContract.FavoriteEntry.COLUMN_SYNOPSIS, item.getOverview());
         resolver.insert(FavoriteContract.FavoriteEntry.CONTENT_URI, cv);
     }
 
