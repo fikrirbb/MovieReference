@@ -118,6 +118,7 @@ implements TrailerAdapter.TrailerItemClickListener {
         mReviewRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mReviewRecyclerView.setHasFixedSize(true);
         mReviewRecyclerView.setAdapter(mReviewAdapter);
+        mReviewRecyclerView.setNestedScrollingEnabled(false);
         movieId = getIntent().getStringExtra(Constant.MOVIE_ID);
         getReviewFromAPI(movieId);
     }
