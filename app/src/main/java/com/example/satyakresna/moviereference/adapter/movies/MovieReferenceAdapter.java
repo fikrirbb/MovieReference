@@ -1,4 +1,4 @@
-package com.example.satyakresna.moviereference.adapter;
+package com.example.satyakresna.moviereference.adapter.movies;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
