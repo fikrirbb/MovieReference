@@ -1,8 +1,10 @@
 package com.example.satyakresna.moviereference;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -34,6 +36,7 @@ public class DetailActivity extends AppCompatActivity {
     private TextView voteAverage;
     private TextView overview;
     private CoordinatorLayout parentDetail;
+    private FloatingActionButton fab;
 
     private String jsonData;
     private MovieResults movieResults;
@@ -52,27 +55,29 @@ public class DetailActivity extends AppCompatActivity {
         voteAverage = (TextView) findViewById(R.id.tv_vote_average);
         overview = (TextView) findViewById(R.id.tv_overview);
         parentDetail = (CoordinatorLayout) findViewById(R.id.parent_detail);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         jsonData = getIntent().getStringExtra(Constant.KEY_MOVIE);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                saveAsFavorite(getContentResolver(), getMovieItem(jsonData));
-            }
-        });
-
-        setupLoader(this, getContentResolver());
-        initLoader(getSupportLoaderManager());
-
         if (jsonData != null) {
             movieResults = gson.fromJson(jsonData, MovieResults.class);
             bindData();
+
+            setupLoader(this, getContentResolver(), getMovieItem(jsonData).getId());
+            initLoader(getSupportLoaderManager());
+
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (fab.getTag() == R.drawable.ic_star_selected) {
+
+                    } else {
+                        saveAsFavorite(getContentResolver(), getMovieItem(jsonData));
+                    }
+                }
+            });
         }
     }
 
@@ -80,7 +85,7 @@ public class DetailActivity extends AppCompatActivity {
         supportLoaderManager.initLoader(Constant.LOADER_ID, null, loaderCallbacks);
     }
 
-    private void setupLoader(final DetailActivity detailActivity, final ContentResolver contentResolver) {
+    private void setupLoader(final DetailActivity detailActivity, final ContentResolver contentResolver, final long movieID) {
         loaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
             @Override
             public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -89,7 +94,7 @@ public class DetailActivity extends AppCompatActivity {
                     public Cursor loadInBackground() {
                         try {
                             return contentResolver.query(
-                                    FavoriteContract.FavoriteEntry.CONTENT_URI,
+                                    uriWithIDBuilder(movieID),
                                     null,
                                     null,
                                     null,
@@ -110,7 +115,7 @@ public class DetailActivity extends AppCompatActivity {
 
             @Override
             public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-                Log.d("size -> ", ""+data.getCount());
+                setFavoriteButton(data.getCount());
             }
 
             @Override
@@ -118,6 +123,28 @@ public class DetailActivity extends AppCompatActivity {
 
             }
         };
+    }
+
+    private Uri uriWithIDBuilder(long id) {
+        return ContentUris.withAppendedId(FavoriteContract.FavoriteEntry.CONTENT_URI, id);
+    }
+
+    private void setFavoriteButton(int count) {
+        if (count > 0) {
+            onStatusReceived(true);
+        } else {
+            onStatusReceived(false);
+        }
+    }
+
+    private void onStatusReceived(boolean isFavorite) {
+        if (isFavorite) {
+            fab.setImageResource(R.drawable.ic_star_selected);
+            fab.setTag(R.drawable.ic_star_selected);
+        } else {
+            fab.setImageResource(R.drawable.ic_star_unselected);
+            fab.setTag(R.drawable.ic_star_unselected);
+        }
     }
 
     private MovieResults getMovieItem(String json) {
