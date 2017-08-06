@@ -3,6 +3,7 @@ package com.example.satyakresna.moviereference;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -38,6 +39,7 @@ import com.example.satyakresna.moviereference.model.trailer.Trailers;
 import com.example.satyakresna.moviereference.utilities.Constant;
 import com.example.satyakresna.moviereference.utilities.DateFormatter;
 import com.example.satyakresna.moviereference.utilities.ImageUrlBuilder;
+import com.example.satyakresna.moviereference.utilities.TrailerUtil;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
@@ -316,6 +318,10 @@ implements TrailerAdapter.TrailerItemClickListener {
 
     @Override
     public void onTrailerItemClick(TrailerResults data, int position) {
-
+        Uri webPage = Uri.parse(TrailerUtil.getYoutubeUrl(data.getKey()));
+        Intent intent = new Intent(Intent.ACTION_VIEW, webPage);
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
     }
 }
