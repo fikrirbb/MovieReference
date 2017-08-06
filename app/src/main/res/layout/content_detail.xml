@@ -14,6 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <LinearLayout
+            android:id="@+id/head_bar"
             android:background="@color/colorPrimary"
             android:padding="8dp"
             android:layout_width="match_parent"
