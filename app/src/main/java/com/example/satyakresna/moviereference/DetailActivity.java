@@ -26,7 +26,7 @@ public class DetailActivity extends AppCompatActivity {
     private TextView overview;
     private CoordinatorLayout parentDetail;
 
-    private String movieId;
+    private String jsonData;
     private MovieResults movieResults;
     private Gson gson = new Gson();
 
@@ -43,6 +43,8 @@ public class DetailActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        jsonData = getIntent().getStringExtra(Constant.KEY_MOVIE);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,7 +54,6 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
-        String jsonData = getIntent().getStringExtra("data");
         if (jsonData != null) {
             movieResults = gson.fromJson(jsonData, MovieResults.class);
             bindData();

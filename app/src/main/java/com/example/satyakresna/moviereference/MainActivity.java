@@ -144,8 +144,7 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
     @Override
     public void onItemClick(MovieResults data, int position) {
         Intent startDetailActivity = new Intent(this, DetailActivity.class);
-        startDetailActivity.putExtra("data", gson.toJson(data));
-        startDetailActivity.putExtra("id", String.valueOf(data.getId()));
+        startDetailActivity.putExtra(Constant.KEY_MOVIE, gson.toJson(data));
         startActivity(startDetailActivity);
     }
 

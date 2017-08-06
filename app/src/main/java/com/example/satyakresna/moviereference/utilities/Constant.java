@@ -14,6 +14,7 @@ public class Constant {
     public static final String POPULAR = "popular";
     public static final String API_KEY = BuildConfig.API_KEY;
     public static final String PARAM_API_KEY = "?api_key=";
+    public static final String KEY_MOVIE = "movie";
     public static final String VIDEOS = "/videos";
     public static final String REVIEW = "/reviews";
 }
