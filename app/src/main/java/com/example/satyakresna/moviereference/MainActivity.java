@@ -10,6 +10,7 @@ import android.os.Parcelable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -38,7 +39,7 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements MovieReferenceAdapter.ItemClickListener {
+public class MainActivity extends AppCompatActivity implements MovieReferenceAdapter.ItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private List<MovieResults> results = new ArrayList<>();
@@ -53,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
     private String categorySelected;
     private LoaderManager.LoaderCallbacks<Cursor> loaderCallbacks;
     private Cursor favoriteData = null;
+
+    private int currentPage = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,11 +73,11 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
             if (savedInstanceState != null) {
                 selectedCategory = savedInstanceState.getString(Constant.KEY_SELECTED_CATEGORY);
                 if (selectedCategory.equals(Constant.POPULAR)) {
-                    getDataFromAPI(Constant.POPULAR);
                     getSupportActionBar().setSubtitle(R.string.action_most_popular);
-                } else {
-                    getDataFromAPI(Constant.TOP_RATED);
+                } else if (selectedCategory.equals(Constant.TOP_RATED)) {
                     getSupportActionBar().setSubtitle(R.string.action_top_rated);
+                } else {
+                    getSupportActionBar().setSubtitle(R.string.action_favorites);
                 }
                 layoutManagerSaveState = savedInstanceState.getParcelable(Constant.LAYOUT_MANAGER);
             } else {
@@ -86,6 +89,14 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
         } else {
             mRecyclerView.setVisibility(View.INVISIBLE);
             mLinearNetworkRetry.setVisibility(View.VISIBLE);
+        }
+
+        if (selectedCategory.equals(Constant.FAVORITES)) {
+            setCategory(selectedCategory);
+            setupLoader(this, getContentResolver());
+            restartLoader(getSupportLoaderManager());
+        } else {
+            loadData(selectedCategory);
         }
 
     }
@@ -179,8 +190,18 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
         onDataReceived(results, 1);
     }
 
-    private void onDataReceived(List<MovieResults> results, int i) {
+    private void onDataReceived(List<MovieResults> results, int page) {
         Log.d("received", ""+results.size());
+        if (page > 1) {
+            mAdapter.updateData(results);
+        } else {
+            mAdapter.replaceAll(results);
+
+            // retain scroll position
+            if (layoutManagerSaveState != null) {
+                mRecyclerView.getLayoutManager().onRestoreInstanceState(layoutManagerSaveState);
+            }
+        }
     }
 
     /**
@@ -264,12 +285,14 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
         switch (itemId) {
             case R.id.action_most_popular:
                 selectedCategory = Constant.POPULAR;
-                getDataFromAPI(selectedCategory);
+                resetPage();
+                loadData(selectedCategory);
                 getSupportActionBar().setSubtitle(R.string.action_most_popular);
                 return true;
             case R.id.action_top_rated:
                 selectedCategory = Constant.TOP_RATED;
-                getDataFromAPI(selectedCategory);
+                resetPage();
+                loadData(selectedCategory);
                 getSupportActionBar().setSubtitle(R.string.action_top_rated);
                 return true;
             case R.id.action_favorites:
@@ -315,5 +338,27 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
         super.onSaveInstanceState(outState);
         outState.putString(Constant.KEY_SELECTED_CATEGORY, selectedCategory);
         outState.putParcelable(Constant.LAYOUT_MANAGER, mRecyclerView.getLayoutManager().onSaveInstanceState());
+    }
+
+    @Override
+    public void onRefresh() {
+        if (selectedCategory.equals(Constant.FAVORITES)) {
+            restartLoader(getSupportLoaderManager());
+        } else {
+            resetPage();
+            loadData(selectedCategory);
+        }
+    }
+
+    private void resetPage() {
+        currentPage = 1;
+    }
+
+    private void loadData(String category) {
+        if (category.equals(Constant.POPULAR)) {
+            getDataFromAPI(Constant.POPULAR);
+        } else if (category.equals(Constant.TOP_RATED)) {
+            getDataFromAPI(Constant.TOP_RATED);
+        }
     }
 }

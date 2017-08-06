@@ -34,6 +34,17 @@ public class MovieReferenceAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         this.mOnClickListener = mOnClickListener;
     }
 
+    public void replaceAll(List<MovieResults> list) {
+        this.list.clear();
+        this.list = list;
+        notifyDataSetChanged();
+    }
+
+    public void updateData(List<MovieResults> list) {
+        this.list.addAll(list);
+        notifyDataSetChanged();
+    }
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
