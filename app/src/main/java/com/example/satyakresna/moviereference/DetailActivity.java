@@ -13,21 +13,36 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.satyakresna.moviereference.adapter.trailer.TrailerAdapter;
 import com.example.satyakresna.moviereference.database.FavoriteContract;
 import com.example.satyakresna.moviereference.model.movies.MovieResults;
+import com.example.satyakresna.moviereference.model.trailer.TrailerResults;
+import com.example.satyakresna.moviereference.model.trailer.Trailers;
 import com.example.satyakresna.moviereference.utilities.Constant;
 import com.example.satyakresna.moviereference.utilities.DateFormatter;
 import com.example.satyakresna.moviereference.utilities.ImageUrlBuilder;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
-public class DetailActivity extends AppCompatActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+public class DetailActivity extends AppCompatActivity
+implements TrailerAdapter.TrailerItemClickListener {
     private static final String TAG = DetailActivity.class.getSimpleName();
 
     private ImageView backdrop;
@@ -38,11 +53,16 @@ public class DetailActivity extends AppCompatActivity {
     private CoordinatorLayout parentDetail;
     private FloatingActionButton fab;
 
+    private String movieId;
     private String jsonData;
     private MovieResults movieResults;
     private Gson gson = new Gson();
 
     private LoaderManager.LoaderCallbacks<Cursor> loaderCallbacks;
+
+    private RecyclerView mTrailerRecyclerView;
+    private TrailerAdapter mTrailerAdapter;
+    private List<TrailerResults> trailerResult = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +76,7 @@ public class DetailActivity extends AppCompatActivity {
         parentDetail = (CoordinatorLayout) findViewById(R.id.parent_detail);
         fab = (FloatingActionButton) findViewById(R.id.fab);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        mTrailerRecyclerView = (RecyclerView) findViewById(R.id.rv_trailers);
         setSupportActionBar(toolbar);
 
         jsonData = getIntent().getStringExtra(Constant.KEY_MOVIE);
@@ -63,7 +84,7 @@ public class DetailActivity extends AppCompatActivity {
         if (jsonData != null) {
             movieResults = gson.fromJson(jsonData, MovieResults.class);
             bindData();
-
+            trailerRecyclerView();
             setupLoader(this, getContentResolver(), getMovieItem(jsonData).getId());
             initLoader(getSupportLoaderManager());
 
@@ -79,6 +100,49 @@ public class DetailActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private void trailerRecyclerView() {
+        mTrailerAdapter = new TrailerAdapter(trailerResult, this);
+        mTrailerRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        mTrailerRecyclerView.setHasFixedSize(true);
+        mTrailerRecyclerView.setAdapter(mTrailerAdapter);
+        movieId = getIntent().getStringExtra(Constant.MOVIE_ID);
+        getTrailerFromAPI(movieId);
+    }
+
+    private void getTrailerFromAPI(String movieId) {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        String url = Constant.URL_API + movieId + Constant.VIDEOS + Constant.PARAM_API_KEY  + Constant.API_KEY;
+        StringRequest stringRequest = new StringRequest(
+                Request.Method.GET,
+                url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            Trailers trailers = gson.fromJson(response, Trailers.class);
+                            for (TrailerResults result : trailers.getResults()) {
+                                trailerResult.add(result);
+                            }
+                            mTrailerAdapter.notifyDataSetChanged();
+                        } catch (Exception e) {
+                            Log.e(TAG, e.getMessage());
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (error != null) {
+                            Log.e(TAG, error.getMessage());
+                        } else {
+                            Log.e(TAG, "Something error happened!");
+                        }
+                    }
+                }
+        );
+        requestQueue.add(stringRequest);
     }
 
     private void unsetAsFavorite(ContentResolver contentResolver, MovieResults movieItem) {
@@ -196,5 +260,10 @@ public class DetailActivity extends AppCompatActivity {
 
     private void restartLoader(LoaderManager supportLoaderManager) {
         supportLoaderManager.restartLoader(Constant.LOADER_ID, null, loaderCallbacks);
+    }
+
+    @Override
+    public void onTrailerItemClick(TrailerResults data, int position) {
+
     }
 }
