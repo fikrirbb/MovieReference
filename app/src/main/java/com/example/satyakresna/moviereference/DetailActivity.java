@@ -1,16 +1,21 @@
 package com.example.satyakresna.moviereference;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.satyakresna.moviereference.database.FavoriteContract;
 import com.example.satyakresna.moviereference.model.movies.MovieResults;
+import com.example.satyakresna.moviereference.utilities.Constant;
 import com.example.satyakresna.moviereference.utilities.DateFormatter;
 import com.example.satyakresna.moviereference.utilities.ImageUrlBuilder;
 import com.google.gson.Gson;
@@ -51,6 +56,7 @@ public class DetailActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                saveAsFavorite(getContentResolver(), getMovieItem(jsonData));
             }
         });
 
@@ -58,6 +64,17 @@ public class DetailActivity extends AppCompatActivity {
             movieResults = gson.fromJson(jsonData, MovieResults.class);
             bindData();
         }
+    }
+
+    private MovieResults getMovieItem(String json) {
+        return gson.fromJson(json, MovieResults.class);
+    }
+
+    private void saveAsFavorite(ContentResolver resolver, MovieResults item) {
+        ContentValues cv = new ContentValues();
+        cv.put(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID, item.getId());
+        cv.put(FavoriteContract.FavoriteEntry.COLUMN_TITLE, item.getTitle());
+        resolver.insert(FavoriteContract.FavoriteEntry.CONTENT_URI, cv);
     }
 
     private void bindData() {
