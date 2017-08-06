@@ -105,4 +105,8 @@
     <string name="action_settings">Settings</string>
     <string name="action_favorites">Favorites</string>
     <string name="trailers">Trailer</string>
+    <string name="reviews">Reviews</string>
+    <string name="failed_load_trailer">Failed load trailer</string>
+    <string name="failed_load_review">Failed load trailer</string>
+    <string name="author">Hello World</string>
 </resources>

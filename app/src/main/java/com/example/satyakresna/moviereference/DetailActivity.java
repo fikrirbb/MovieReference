@@ -27,9 +27,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.satyakresna.moviereference.adapter.reviews.ReviewAdapter;
 import com.example.satyakresna.moviereference.adapter.trailer.TrailerAdapter;
 import com.example.satyakresna.moviereference.database.FavoriteContract;
 import com.example.satyakresna.moviereference.model.movies.MovieResults;
+import com.example.satyakresna.moviereference.model.reviews.Reviews;
+import com.example.satyakresna.moviereference.model.reviews.ReviewsResult;
 import com.example.satyakresna.moviereference.model.trailer.TrailerResults;
 import com.example.satyakresna.moviereference.model.trailer.Trailers;
 import com.example.satyakresna.moviereference.utilities.Constant;
@@ -64,6 +67,10 @@ implements TrailerAdapter.TrailerItemClickListener {
     private TrailerAdapter mTrailerAdapter;
     private List<TrailerResults> trailerResult = new ArrayList<>();
 
+    private RecyclerView mReviewRecyclerView;
+    private ReviewAdapter mReviewAdapter;
+    private List<ReviewsResult> reviewResult = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +84,7 @@ implements TrailerAdapter.TrailerItemClickListener {
         fab = (FloatingActionButton) findViewById(R.id.fab);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         mTrailerRecyclerView = (RecyclerView) findViewById(R.id.rv_trailers);
+        mReviewRecyclerView = (RecyclerView) findViewById(R.id.rv_reviews);
         setSupportActionBar(toolbar);
 
         jsonData = getIntent().getStringExtra(Constant.KEY_MOVIE);
@@ -85,6 +93,7 @@ implements TrailerAdapter.TrailerItemClickListener {
             movieResults = gson.fromJson(jsonData, MovieResults.class);
             bindData();
             trailerRecyclerView();
+            reviewRecyclerView();
             setupLoader(this, getContentResolver(), getMovieItem(jsonData).getId());
             initLoader(getSupportLoaderManager());
 
@@ -100,6 +109,49 @@ implements TrailerAdapter.TrailerItemClickListener {
                 }
             });
         }
+    }
+
+    private void reviewRecyclerView() {
+        mReviewAdapter = new ReviewAdapter(reviewResult);
+        mReviewRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mReviewRecyclerView.setHasFixedSize(true);
+        mReviewRecyclerView.setAdapter(mReviewAdapter);
+        movieId = getIntent().getStringExtra(Constant.MOVIE_ID);
+        getReviewFromAPI(movieId);
+    }
+
+    private void getReviewFromAPI(String movieId) {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        String url = Constant.URL_API + movieId + Constant.REVIEW + Constant.PARAM_API_KEY  + Constant.API_KEY;
+        StringRequest stringRequest = new StringRequest(
+                Request.Method.GET,
+                url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            Reviews reviews = gson.fromJson(response, Reviews.class);
+                            for (ReviewsResult result : reviews.getResults()) {
+                                reviewResult.add(result);
+                            }
+                            mReviewAdapter.notifyDataSetChanged();
+                        } catch (Exception e) {
+                            Log.e(TAG, "Something error happened!");
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (error != null) {
+                            Log.e(TAG, error.getMessage());
+                        } else {
+                            Log.e(TAG, "Something error happened!");
+                        }
+                    }
+                }
+        );
+        requestQueue.add(stringRequest);
     }
 
     private void trailerRecyclerView() {
