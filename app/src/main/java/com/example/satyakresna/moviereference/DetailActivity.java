@@ -71,7 +71,7 @@ public class DetailActivity extends AppCompatActivity {
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (fab.getTag() == R.drawable.ic_star_selected) {
+                    if ((Integer)fab.getTag() == R.drawable.ic_star_selected) {
 
                     } else {
                         saveAsFavorite(getContentResolver(), getMovieItem(jsonData));
