@@ -1,10 +1,15 @@
 package com.example.satyakresna.moviereference;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Parcelable;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -24,6 +29,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.satyakresna.moviereference.adapter.MovieReferenceAdapter;
+import com.example.satyakresna.moviereference.database.FavoriteContract;
 import com.example.satyakresna.moviereference.model.movies.MovieResults;
 import com.example.satyakresna.moviereference.model.movies.Movies;
 import com.example.satyakresna.moviereference.utilities.Constant;
@@ -44,6 +50,9 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
 
     private Parcelable layoutManagerSaveState;
     private String selectedCategory;
+    private String categorySelected;
+    private LoaderManager.LoaderCallbacks<Cursor> loaderCallbacks;
+    private Cursor favoriteData = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +88,99 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
             mLinearNetworkRetry.setVisibility(View.VISIBLE);
         }
 
+    }
+
+    private void setupLoader(final MainActivity mainActivity, final ContentResolver contentResolver) {
+        loaderCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
+            @Override
+            public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+                return new AsyncTaskLoader<Cursor>(mainActivity) {
+                    @Override
+                    public Cursor loadInBackground() {
+                        try {
+                            return contentResolver.query(
+                                    FavoriteContract.FavoriteEntry.CONTENT_URI,
+                                    null,
+                                    null,
+                                    null,
+                                    null
+                            );
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            return null;
+                        }
+                    }
+
+                    @Override
+                    protected void onStartLoading() {
+                        if (categorySelected.equals(Constant.FAVORITES)) {
+                            forceLoad();
+                        }
+                    }
+                };
+            }
+
+            @Override
+            public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+                Log.d("Favorites found: ", ""+data.getCount());
+                favoriteData = data;
+                generateFromCursor(favoriteData);
+            }
+
+            @Override
+            public void onLoaderReset(Loader<Cursor> loader) {
+
+            }
+        };
+    }
+
+    private void generateFromCursor(Cursor cursor) {
+        List<MovieResults> results = new ArrayList<>();
+        cursor.moveToPosition(-1);
+        try {
+            while (cursor.moveToNext()) {
+                MovieResults movieResult = new MovieResults();
+                movieResult.setPoster_path(
+                        cursor.getString(
+                                cursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_POSTER)
+                        )
+                );
+                movieResult.setTitle(
+                        cursor.getString(
+                                cursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_TITLE)
+                        )
+                );
+                movieResult.setRelease_date(
+                        cursor.getString(
+                                cursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_RELEASE_DATE)
+                        )
+                );
+                movieResult.setOverview(
+                        cursor.getString(
+                                cursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_RATING)
+                        )
+                );
+                movieResult.setVote_average(
+                        cursor.getDouble(
+                                cursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_RATING)
+                        )
+                );
+                movieResult.setId(
+                        cursor.getInt(
+                                cursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_MOVIE_ID)
+                        )
+                );
+                results.add(movieResult);
+            }
+        } finally {
+            cursor.close();
+        }
+
+        onDataReceived(results, 1);
+    }
+
+    private void onDataReceived(List<MovieResults> results, int i) {
+        Log.d("received", ""+results.size());
     }
 
     /**
@@ -170,10 +272,27 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
                 getSupportActionBar().setSubtitle(R.string.action_top_rated);
                 return true;
             case R.id.action_favorites:
+                selectedCategory = Constant.FAVORITES;
+                getSupportActionBar().setSubtitle(R.string.action_favorites);
+                setCategory(selectedCategory);
+                setupLoader(this, getContentResolver());
+                restartLoader(getSupportLoaderManager());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void setCategory(String selectedCategory) {
+        categorySelected = selectedCategory;
+    }
+
+    private void initLoader(LoaderManager supportLoaderManager) {
+        supportLoaderManager.initLoader(Constant.LOADER_MAIN_ID, null, loaderCallbacks);
+    }
+
+    private void restartLoader(LoaderManager supportLoaderManager) {
+        supportLoaderManager.restartLoader(Constant.LOADER_MAIN_ID, null, loaderCallbacks);
     }
 
     private boolean isNetworkConnected() {

@@ -43,7 +43,6 @@ public class DetailActivity extends AppCompatActivity {
     private Gson gson = new Gson();
 
     private LoaderManager.LoaderCallbacks<Cursor> loaderCallbacks;
-    private Cursor favoriteData = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
