@@ -224,8 +224,8 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
     private int calculateNoOfColumns(MainActivity mainActivity) {
         DisplayMetrics displayMetrics = mainActivity.getResources().getDisplayMetrics();
         float dpWidth = displayMetrics.widthPixels /displayMetrics.density;
-        int scallingFactor = 180;
-        int noOfColumns = (int) (dpWidth / scallingFactor);
+        int scalingFactor = 180;
+        int noOfColumns = (int) (dpWidth / scalingFactor);
         return  noOfColumns;
     }
 
