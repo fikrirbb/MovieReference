@@ -46,17 +46,21 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class DetailActivity extends AppCompatActivity
 implements TrailerAdapter.TrailerItemClickListener {
     private static final String TAG = DetailActivity.class.getSimpleName();
 
-    private ImageView backdrop;
-    private ImageView poster;
-    private TextView releaseDate;
-    private TextView voteAverage;
-    private TextView overview;
-    private CoordinatorLayout parentDetail;
-    private FloatingActionButton fab;
+    @BindView(R.id.iv_backdrop_path) ImageView backdrop;
+    @BindView(R.id.iv_poster) ImageView poster;
+    @BindView(R.id.tv_release_date) TextView releaseDate;
+    @BindView(R.id.tv_vote_average) TextView voteAverage;
+    @BindView(R.id.tv_overview) TextView overview;
+    @BindView(R.id.parent_detail) CoordinatorLayout parentDetail;
+    @BindView(R.id.fab) FloatingActionButton fab;
+    @BindView(R.id.toolbar) Toolbar toolbar;
 
     private String movieId;
     private String jsonData;
@@ -65,11 +69,11 @@ implements TrailerAdapter.TrailerItemClickListener {
 
     private LoaderManager.LoaderCallbacks<Cursor> loaderCallbacks;
 
-    private RecyclerView mTrailerRecyclerView;
+    @BindView(R.id.rv_trailers) RecyclerView mTrailerRecyclerView;
     private TrailerAdapter mTrailerAdapter;
     private List<TrailerResults> trailerResult = new ArrayList<>();
 
-    private RecyclerView mReviewRecyclerView;
+    @BindView(R.id.rv_reviews) RecyclerView mReviewRecyclerView;
     private ReviewAdapter mReviewAdapter;
     private List<ReviewsResult> reviewResult = new ArrayList<>();
 
@@ -77,16 +81,7 @@ implements TrailerAdapter.TrailerItemClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-        backdrop = (ImageView) findViewById(R.id.iv_backdrop_path);
-        poster = (ImageView) findViewById(R.id.iv_poster);
-        releaseDate = (TextView) findViewById(R.id.tv_release_date);
-        voteAverage = (TextView) findViewById(R.id.tv_vote_average);
-        overview = (TextView) findViewById(R.id.tv_overview);
-        parentDetail = (CoordinatorLayout) findViewById(R.id.parent_detail);
-        fab = (FloatingActionButton) findViewById(R.id.fab);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        mTrailerRecyclerView = (RecyclerView) findViewById(R.id.rv_trailers);
-        mReviewRecyclerView = (RecyclerView) findViewById(R.id.rv_reviews);
+        ButterKnife.bind(this);
         setSupportActionBar(toolbar);
 
         jsonData = getIntent().getStringExtra(Constant.KEY_MOVIE);

@@ -13,6 +13,9 @@ import com.example.satyakresna.moviereference.model.reviews.ReviewsResult;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by satyakresna on 06-Aug-17.
  */
@@ -48,13 +51,12 @@ public class ReviewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     public class ReviewViewHolder extends RecyclerView.ViewHolder {
-        TextView reviewAuthorName;
-        TextView reviewAuthorReview;
+        @BindView(R.id.tv_author) TextView reviewAuthorName;
+        @BindView(R.id.tv_review) TextView reviewAuthorReview;
 
         public ReviewViewHolder(View itemView) {
             super(itemView);
-            reviewAuthorName = (TextView) itemView.findViewById(R.id.tv_author);
-            reviewAuthorReview = (TextView) itemView.findViewById(R.id.tv_review);
+            ButterKnife.bind(this, itemView);
         }
 
         public void bind(final ReviewsResult data) {

@@ -39,15 +39,18 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity implements MovieReferenceAdapter.ItemClickListener, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private List<MovieResults> results = new ArrayList<>();
     private Gson gson = new Gson();
     private MovieReferenceAdapter mAdapter;
-    RecyclerView mRecyclerView;
-    LinearLayout mLinearNetworkRetry;
-    TextView mDisplayErrorMessage;
+    @BindView(R.id.rv_movies) RecyclerView mRecyclerView;
+    @BindView(R.id.line_network_retry) LinearLayout mLinearNetworkRetry;
+    @BindView(R.id.tv_error_message) TextView mDisplayErrorMessage;
 
     private Parcelable layoutManagerSaveState;
     private String selectedCategory;
@@ -61,9 +64,7 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mRecyclerView = (RecyclerView) findViewById(R.id.rv_movies);
-        mLinearNetworkRetry = (LinearLayout) findViewById(R.id.line_network_retry);
-        mDisplayErrorMessage = (TextView) findViewById(R.id.tv_error_message);
+        ButterKnife.bind(this);
         GridLayoutManager layoutManager = new GridLayoutManager(this, calculateNoOfColumns(MainActivity.this));
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
