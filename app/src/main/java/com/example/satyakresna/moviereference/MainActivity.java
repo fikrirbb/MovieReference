@@ -357,8 +357,10 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
 
     private void loadData(String category) {
         if (category.equals(Constant.POPULAR)) {
+            mAdapter.replaceAll(results);
             getDataFromAPI(Constant.POPULAR);
         } else if (category.equals(Constant.TOP_RATED)) {
+            mAdapter.replaceAll(results);
             getDataFromAPI(Constant.TOP_RATED);
         }
     }
