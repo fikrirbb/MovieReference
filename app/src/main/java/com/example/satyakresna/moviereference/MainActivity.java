@@ -84,7 +84,6 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
             } else {
                 // Set default
                 selectedCategory = Constant.POPULAR;
-                getDataFromAPI(selectedCategory);
                 getSupportActionBar().setSubtitle(R.string.action_most_popular);
             }
         } else {
