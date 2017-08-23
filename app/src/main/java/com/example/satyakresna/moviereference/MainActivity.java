@@ -161,6 +161,11 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
                                 cursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_TITLE)
                         )
                 );
+                movieResult.setBackdrop_path(
+                        cursor.getString(
+                                cursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_BACKDROP)
+                        )
+                );
                 movieResult.setRelease_date(
                         cursor.getString(
                                 cursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_RELEASE_DATE)
