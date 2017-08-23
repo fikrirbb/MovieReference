@@ -42,7 +42,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements MovieReferenceAdapter.ItemClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class MainActivity extends AppCompatActivity implements MovieReferenceAdapter.ItemClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private List<MovieResults> results = new ArrayList<>();
@@ -338,16 +338,6 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
         super.onSaveInstanceState(outState);
         outState.putString(Constant.KEY_SELECTED_CATEGORY, selectedCategory);
         outState.putParcelable(Constant.LAYOUT_MANAGER, mRecyclerView.getLayoutManager().onSaveInstanceState());
-    }
-
-    @Override
-    public void onRefresh() {
-        if (selectedCategory.equals(Constant.FAVORITES)) {
-            restartLoader(getSupportLoaderManager());
-        } else {
-            resetPage();
-            loadData(selectedCategory);
-        }
     }
 
     private void resetPage() {
