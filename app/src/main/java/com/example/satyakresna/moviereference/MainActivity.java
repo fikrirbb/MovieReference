@@ -316,10 +316,6 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
         categorySelected = selectedCategory;
     }
 
-    private void initLoader(LoaderManager supportLoaderManager) {
-        supportLoaderManager.initLoader(Constant.LOADER_MAIN_ID, null, loaderCallbacks);
-    }
-
     private void restartLoader(LoaderManager supportLoaderManager) {
         supportLoaderManager.restartLoader(Constant.LOADER_MAIN_ID, null, loaderCallbacks);
     }
