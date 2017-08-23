@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
                 );
                 movieResult.setOverview(
                         cursor.getString(
-                                cursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_RATING)
+                                cursor.getColumnIndex(FavoriteContract.FavoriteEntry.COLUMN_SYNOPSIS)
                         )
                 );
                 movieResult.setVote_average(
