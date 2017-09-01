@@ -109,4 +109,6 @@
     <string name="failed_load_trailer">Failed load trailer</string>
     <string name="failed_load_review">Failed load trailer</string>
     <string name="author">Hello World</string>
+    <string name="action_search">Search</string>
+    <string name="search_description">Search movie based on category</string>
 </resources>

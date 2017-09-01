@@ -21,4 +21,6 @@ public class Constant {
     public static final String REVIEW = "/reviews";
     public static final int LOADER_ID = 1;
     public static final int LOADER_MAIN_ID = 2;
+    public static final String URL_API_SEARCH = "http://api.themoviedb.org/3/search/movie";
+    public static final String PARAM_QUERY = "&query=";
 }

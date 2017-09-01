@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
@@ -22,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -59,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
     private Cursor favoriteData = null;
 
     private int currentPage = 1;
+
+    private SearchView mSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -280,7 +284,56 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        mSearch = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        mSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Toast.makeText(MainActivity.this, "Searching...", Toast.LENGTH_SHORT).show();
+                getDataFromAPIBySearch(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
         return super.onCreateOptionsMenu(menu);
+    }
+
+    private void getDataFromAPIBySearch(String query) {
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        String url = Constant.URL_API_SEARCH + Constant.PARAM_API_KEY + Constant.API_KEY + Constant.PARAM_QUERY + query;
+        StringRequest stringRequest = new StringRequest(
+                Request.Method.GET,
+                url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            Movies movies = gson.fromJson(response, Movies.class);
+                            results.clear();
+                            for (MovieResults item : movies.getResults()) {
+                                results.add(item);
+                            }
+                            mAdapter.notifyDataSetChanged();
+                        } catch (Exception e) {
+                            Log.e(TAG, e.getMessage());
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (error != null) {
+                            Log.e(TAG, error.getMessage());
+                        } else {
+                            Log.e(TAG, "Something error happened!");
+                        }
+                    }
+                }
+        );
+        requestQueue.add(stringRequest);
     }
 
     @Override
