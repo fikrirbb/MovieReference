@@ -111,4 +111,5 @@
     <string name="author">Hello World</string>
     <string name="action_search">Search</string>
     <string name="search_description">Search movie based on category</string>
+    <string name="action_share">Share</string>
 </resources>
