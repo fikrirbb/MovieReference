@@ -90,17 +90,16 @@ public class MainActivity extends AppCompatActivity implements MovieReferenceAda
                 selectedCategory = Constant.POPULAR;
                 getSupportActionBar().setSubtitle(R.string.action_most_popular);
             }
+            if (selectedCategory.equals(Constant.FAVORITES)) {
+                setCategory(selectedCategory);
+                setupLoader(this, getContentResolver());
+                restartLoader(getSupportLoaderManager());
+            } else {
+                loadData(selectedCategory);
+            }
         } else {
             mRecyclerView.setVisibility(View.INVISIBLE);
             mLinearNetworkRetry.setVisibility(View.VISIBLE);
-        }
-
-        if (selectedCategory.equals(Constant.FAVORITES)) {
-            setCategory(selectedCategory);
-            setupLoader(this, getContentResolver());
-            restartLoader(getSupportLoaderManager());
-        } else {
-            loadData(selectedCategory);
         }
 
     }
